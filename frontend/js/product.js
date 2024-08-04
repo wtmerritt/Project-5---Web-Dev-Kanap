@@ -1,70 +1,52 @@
 // console.log("Window Location:", window.location);
 
-const myProd_ID = window.location.search;
-const urlParam = new URLSearchParams(myProd_ID);
-const prod_ID = urlParam.get("id");
-const prodWebSite = "http://localhost:3000/api/products/";
-const url = `${prodWebSite}` + "?id=" + `${prod_ID.toString()}`;
+const myProdId = window.location.search;
+const urlParam = new URLSearchParams(myProdId);
+const prodId = urlParam.get("id");
+const productUrl = `http://localhost:3000/api/products/${prodId}`;
 
-// console.log("ID:", prod_ID);
-// console.log("URL:", url);
-
-fetch(url, {
-  method: "GET",
-  headers: {
-    Accept: "application/json",
-  },
-})
+fetch(productUrl)
   .then((data) => {
     return data.json();
   })
-  .then((products) => {
+  .then((product) => {
     console.log("Product Page");
     // console.log(products);
-    insertProduct(products);
+    insertProduct(product);
   });
 
-// Get Existing Item
-const products = document.getElementById("item__content");
+/**
+ * Insert Product Details
+ *
+ * @param {Object} product - product details
+ */
+function insertProduct(product) {
+  console.log(product);
 
-// Calling Function to insert product
-function insertProduct(products) {
   // Assign variables
-  const productElement = document.createElement("h1");
-  const productElement2 = document.createElement("p");
-  const productElement3 = document.createElement("p");
+  const imageElement = document.querySelector(".item__img");
+  imageElement.innerHTML = `
+  <img src="${product.imageUrl}" alt="${product.altTxt}">
+  `;
 
-  for (let i = 0; i < products.length; i++) {
-    const product_ID = products[i]._id;
-    const price = products[i].price;
-    const name = products[i].name;
-    const descr = products[i].description;
-    // console.log("Chosen Product = " + product_ID);
+  const titleElement = document.getElementById("title");
+  titleElement.innerText = product.name;
 
-    if (prod_ID === product_ID) {
-      console.log("Match found ...");
-      console.log("Product ID:", product_ID);
-      console.log("Name:", name);
-      console.log("Price:", price);
-      console.log("Description:", descr);
-   
-      // Insert current Product card in the new DOM element
-      productElement.innerHTML = `
-          <h1>${name}</h1>
-          `;
+  const priceElement = document.getElementById("price");
+  priceElement.innerText = product.price;
 
-      productElement2.innerHTML = `        
-            <p>${price}</p>        
-        `;
+  const descrElement = document.getElementById("description");
+  descrElement.innerText = product.description;
 
-         productElement3.innerHTML = `        
-            <p>${descr}</p>        
-        `;    
-    } 
+  const choice = document.getElementById("colors");
+  const options = product.colors;
 
-    document.getElementById("title").appendChild(productElement);
-    document.getElementById("price").appendChild(productElement2);
-    document.getElementById("description").appendChild(productElement3);
-
+  for (let i = 0; i < options.length; i++) {    
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.text = options[i];
+    // console.log("opt.value: " + opt.value);
+    // console.log("opt.text: " + opt.text);      
+    choice.add(opt, null);   
   }
 }
