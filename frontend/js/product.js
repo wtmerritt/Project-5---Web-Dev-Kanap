@@ -1,15 +1,12 @@
 // console.log("Window Location:", window.location);
 
-const myProdId = window.location.search;
-const urlParam = new URLSearchParams(myProdId);
-const prodId = urlParam.get("id");
-const productUrl = `http://localhost:3000/api/products/${prodId}`;
+// const myProdId = window.location.search;
+const urlParam = new URLSearchParams(location.search);
+const productId = urlParam.get("id");
+const productUrl = `http://localhost:3000/api/products/${productId}`;
 
-let colorSelected = "";
 let colorChoices = "";
 let productName = "";
-let productQuantity = "";
-let prodQuantity = "";
 let colorOptions = "";
 
 fetch(productUrl)
@@ -55,71 +52,103 @@ function insertProduct(product) {
 
   for (let i = 0; i < colorOptions.length; i++) {
     const opt = document.createElement("option");
-    opt.value = i;
+    opt.value = colorOptions[i];
     opt.text = colorOptions[i];
     // console.log("opt.value: " + opt.value);
     // console.log("opt.text: " + opt.text);
     colorChoices.add(opt, null);
   }
-
-  // Get Color Selection
-  colorChoices.addEventListener("change", function () {
-    console.log("color selected value: " + colorChoices.value);
-    var i = Number(colorChoices.value) + 1;
-    console.log("i: " + i);
-    colorSelected = colorChoices[i].text;
-    console.log("color selected text: " + colorSelected);
-  });
-  // console.log("After loop for color selected text: " + colorSelected);
-
-  productQuantity = document.getElementById("quantity");
-  // console.log("Quantity: " + productQuantity);
-
-  // Get Quantity Amount 
-  productQuantity.addEventListener("change", function () {    
-    prodQuantity = productQuantity.value;
-    console.log("quantity: " + prodQuantity);    
-  });
-  // console.log("quantity: " + prodQuantity);
 }
 
-// Clicked Add to cart button ...
+// When clicked add to cart button ...
 const cartAddItem = document.getElementById("addToCart");
-// cartAddItem.addEventListener(
-//   "click",
-//   addItemToCart(prodId, productName, "blue")
-// );
-
-cartAddItem.addEventListener(
-  "click",
-  addItemToCart(prodId, prodQuantity, colorSelected)
-);
+cartAddItem.addEventListener("click", addItemToCart);
 
 /**
  * Clicked to Add to cart button
- *
- * @param {text} id - Product Id
- * @param {number} quantity - Product Quantity
- * @param {text} colorChoice - Product Color
  */
-function addItemToCart(id, quantity, colorChoice) {
-  // alert("Hello -> Add Cart Item ...");
-  console.log("id: " + id);
-  console.log("quantity: " + quantity);
-  console.log("color: " + colorChoice);
+function addItemToCart() {
+  let cartArray = [];
 
-  let myCartObj = {
-    id: prodId,
+  const quantity = document.getElementById("quantity").value;
+  const color = document.getElementById("colors").value;
+  // console.log("id: " + productId);
+  // console.log("quantity: " + quantity);
+  // console.log("color: " + color);
+
+  const myCartObj = {
+    id: productId,
     quantity: quantity,
-    color: colorChoice,
+    color: color,
   };
 
-  let myCartObj_serialized = JSON.stringify(myCartObj);
-  // console.log(myCartObj_serialized);
+  // Assign Cart Object
+  let cartJson = JSON.stringify(myCartObj);
 
-  localStorage.setItem("myCartObj", myCartObj_serialized);
-  // console.log(localStorage);
-  let myCartObj_deserialized = JSON.parse(localStorage.getItem("myCartObj"));
+  // Check for Empty Local Storage
+  if (localStorage.length === 0) {
+    for (key in myCartObj) {
+      let entry = [];
+      entry.push(key);
+      entry.push(myCartObj[key]);
+      cartArray.push(entry);
+    }
+    console.log("Cart Array: " + cartArray);
 
-  // console.log(myCartObj_deserialized);
+    // localStorage.setItem("cart", cartArray);
+    localStorage.setItem("cart", JSON.stringify(cartArray));
+    // localStorage.setItem("cart", cartJson);
+    console.log(localStorage);
+    alert("Empty Local Storage -- New item added to cart!");
+  } else {
+    // Assign Cart Object
+    let cartJson = JSON.stringify(myCartObj);
+
+    for (key in myCartObj) {
+      let entry = [];
+      entry.push(key);
+      entry.push(myCartObj[key]);
+      cartArray.push(entry);
+    }
+
+    // Appending New Data to Old Data
+    let oldCartData = localStorage.getItem("cart");
+    // console.log("Cart array: " + cartArray);
+    // let oldCartData = JSON.parse(localStorage.getItem("cart"));
+
+    // Call Function to Append item
+    appendToStorage("cart", oldCartData + JSON.stringify(cartArray));
+
+    // console.log("local storage: " + localStorage.length);
+    // // for (let i = 0; i < localStorage.length; i++) {
+    // //   const key = localStorage.key(i);
+    // //   console.log("Cart Items: " + `${key}: ${localStorage.getItem(key)}`);
+
+    // //   let myCartObj_deserialized = JSON.parse(localStorage.getItem("cart"));
+    // //   console.log(myCartObj_deserialized);
+    // //   console.log("productID: " + myCartObj_deserialized.id);
+    // //   console.log("productID: " + myCartObj_deserialized.color);
+
+    //   // Checking for match in localStorage
+    //   if (
+    //     productId === myCartObj_deserialized.id &&
+    //     color === myCartObj_deserialized.color
+    //   ) {
+    //     console.log("Match Found Update Item in Local Storage ...");
+    //   }
+    // }
+  }
+
+  /**
+   * No match found Append to localStorage
+   *
+   * @param {*} cartData - new cart data
+   * @param {*} localStorageData - localStorage data
+   */
+  function appendToStorage(cartData, localStorageData) {
+    // var currentData = localStorage.getItem(cartData);
+    // if (currentData === null) currentData = "";
+    localStorage.setItem(cartData, localStorageData);
+    alert("Existing Local Storage -- New item added to cart!");
+  }
 }
