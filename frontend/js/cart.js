@@ -1,29 +1,18 @@
 // TODO - Read thru cart items and to add  cards to this page.
 
-const urlParam = new URLSearchParams(location.search);
-const productId = urlParam.get("id");
-const productUrl = `http://localhost:3000/api/products/${productId}`;
+// const urlParam = new URLSearchParams(location.search);
+// const productId = urlParam.get("id");
+const cartItems = localStorage.getItem("cart");
+// console.log("cart Items: " + cartItems);
+insertCart(cartItems);
 
-fetch(productUrl)
-  .then((data) => {
-    return data.json();
-  })
-  .then((product) => {
-    // console.log("Product Page");
-    // console.log(products);
-    insertProduct(product);
-  });
-
+function insertCart(cartItems) {
+  console.log(cartItems);
+}
 
 // Assign variables
-const imageElement = document.querySelector(".cart__items");
+// const imageElement = document.querySelector(".cart__items");
 // console.log("imageElement = " + imageElement);
-
-
-let oldCartData = localStorage.getItem("cart");
-oldCartData = JSON.parse(oldCartData)
-console.log("Cart Data: " + oldCartData);
-console.log(typeof oldCartData);
 
 
 // for (let i = 0; i < oldCartData.length; i++) {
