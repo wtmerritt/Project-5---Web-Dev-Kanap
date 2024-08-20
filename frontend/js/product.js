@@ -70,8 +70,7 @@ function addItemToCart() {
   if (cart.length === 0) {
     cart.push(cartItem);       
     alert("Empty Local Storage -- New item added to cart!");
-  } else {    
-    let cartJson = JSON.stringify(cartItem);
+  } else {        
     // Check if cartItem exist with cart Color & ProductId match 
     const existing = cart.find(
       (cartItem) => cartItem.id === productId && cartItem.color === color
@@ -88,5 +87,5 @@ function addItemToCart() {
        alert("No Match Found -- New item added to cart!");
     }
   }
-  localStorage.setItem("cart", JSON.stringify(cart)); 
+  localStorage.setItem("cart", JSON.stringify(cart));   
 }
