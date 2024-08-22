@@ -6,7 +6,7 @@ fetch("http://localhost:3000/api/products")
     return data.json();
   })
   .then((products) => {
-    console.log("Home Page");
+    // console.log("Home Page");
     insertProducts(products);
     // console.log(products);
   });
