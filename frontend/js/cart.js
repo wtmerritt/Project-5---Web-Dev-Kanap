@@ -52,20 +52,67 @@ cart.forEach((cartData) => {
       quantity = parseInt(cartData.quantity);
       // console.log("Quantity = ", quantity);
       subTotal = parseFloat(price * quantity);
-      totalPrice = subTotal + totalPrice;
-      // console.log("Sub Total = ", subTotal);
-      // console.log("Total Price = ", totalPrice);
       count += 1;
+
+      // Call Function to Calculate Total Price
+      calculateTotalPrice(subTotal);
 
       document.getElementById("cart__items").appendChild(articleElement);
 
+      // Assign Delete Item variable
+      const deleteCartItem = document.querySelector(".deleteItem");      
+
+      // Call Delete Product Item Listener
+      deleteCartItem.addEventListener("click", function () {              
+        console.log("cartData ID = ", cartData.id);          
+        removeItemFromCart(cartData.id);
+
+        let oldSubTotal = subTotal;
+        // console.log("Old SubTotal = ", oldSubTotal);
+
+        subTotal = parseFloat(price * changeQuantity.value) - oldSubTotal;
+        // console.log("subTotal = ", subTotal);
+
+        // Call Function to Calculate Total Price
+        calculateTotalPrice(subTotal);
+      });
+
+      // Assign Change Quantity variable
+      const changeQuantity = document.querySelector(".itemQuantity");    
+
+      // Change Quantity Function
+      changeQuantity.addEventListener("input", function () {
+        let oldSubTotal = subTotal;
+        // console.log("Old SubTotal = ", oldSubTotal);
+
+        subTotal = parseFloat(price * changeQuantity.value) - oldSubTotal;
+        // console.log("subTotal = ", subTotal);
+
+        // Call Function to Calculate Total Price
+        calculateTotalPrice(subTotal);
+      });
+
+      // Remove Product from Cart
+      function removeItemFromCart(cartId) {
+        let temp = cart.filter((item) => item.id != cartId);
+        // console.log("temp = ", temp);
+        localStorage.setItem("cart", JSON.stringify(temp));
+      }
+
+      function calculateTotalPrice(subTotal) {        
+        totalPrice = subTotal + totalPrice;
+
+        displayTotalPice(totalPrice);
+      }
+
       // Display Total Price
-      const cartPrice = document.querySelector(".cart__price");
-      cartPrice.innerHTML = `
+      function displayTotalPice(totalPrice) {
+        const cartPrice = document.querySelector(".cart__price");
+        cartPrice.innerHTML = `
         <article>
           <p>Total (${count} articles): €${totalPrice}</p>
         </article>
-          `;
-      document.getElementById("cart__items").appendChild(cartPrice);
+          `;        
+      }
     });
 });
