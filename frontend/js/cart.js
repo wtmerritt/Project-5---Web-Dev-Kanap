@@ -5,22 +5,18 @@ const cart = JSON.parse(cartData);
 // console.log("cart Data: " + cart);
 
 let productID = "";
-let productColor = "";
-let productName = "";
+// let productColor = "";
+// let productName = "";
 let price = 0;
 let quantity = 0;
 let quantitySubTotal = 0;
 let totalQuantity = 0;
 let priceSubTotal = 0;
 let totalPrice = 0;
-let count = 0;
-const productCache = [];
 
 // Loop thru local storage
-cart.forEach((cartData) => {
-  // console.log(cartData);
-  productID = cartData.id;
-  // console.log("cartData ID = ", cartData.id);
+cart.forEach((cartData) => {  
+  productID = cartData.id;  
   const productUrl = `http://localhost:3000/api/products/${productID}`;
 
   // Fetch Product Info from API
@@ -28,14 +24,12 @@ cart.forEach((cartData) => {
     .then((data) => {
       return data.json();
     })
-    .then((product) => {
-      // TODO push product into cache if it not there Use Find method ...
+    .then((product) => {      
       const articleElement = document.createElement("article");
 
-      
       articleElement.classList.add("cart__item");
       articleElement.dataset.id = product._id;
-      articleElement.dataset.color = cartData.color;            
+      articleElement.dataset.color = cartData.color;
       articleElement.innerHTML = `<div class="cart__item__img">      
                   <img src="${product.imageUrl}" alt="${product.altTxt}">
                 </div>
@@ -55,42 +49,29 @@ cart.forEach((cartData) => {
                     </div>
                   </div>
                 </div>`;
-
-      // console.log("cartData ID = ", product._id);
-
-      price = parseInt(product.price);
-      // console.log("Price = ", price);
+      
+      price = parseInt(product.price);      
       quantity = parseInt(cartData.quantity);
       quantitySubTotal = quantity;
 
-      priceSubTotal = price * quantitySubTotal;
-      // totalPrice = priceSubTotal;
-      // count += 1;
+      priceSubTotal = price * quantitySubTotal;      
 
       // Call Function to Calculate Total Price
-      calculateTotals(priceSubTotal, quantitySubTotal);
-
-      // Call Function to Display Total Price
-      // displayTotals(totalPrice);
+      calculateTotals(priceSubTotal, quantitySubTotal);      
 
       document.getElementById("cart__items").appendChild(articleElement);
 
       // Assign Delete Item variable
-      const deleteCartItem = articleElement.querySelector(".deleteItem");
-      //  console.log("Delete Color is ", deleteCartItem);
-
+      const deleteCartItem = articleElement.querySelector(".deleteItem");      
 
       // Trigger Delete Product Item Listener Function
       deleteCartItem.addEventListener("click", function (event) {
         let oldSubTotal = priceSubTotal;
 
         // Call Remove Item From Cart function
-        const delPriceItem = price * changeQuantity.value;
-        // console.log("Deleted Sub Total", delPriceItem);
-        
+        const delPriceItem = price * changeQuantity.value;      
         const color = articleElement.dataset.color;
-        console.log("Delete Color is ", color);
-       
+
         // removeItemFromCart(product._id);
         removeItemFromCart(product._id, color);
         event.target.closest("article").remove();
@@ -101,9 +82,6 @@ cart.forEach((cartData) => {
 
         priceSubTotal = totalPrice - delPriceItem;
         quantitySubTotal -= changeQuantity.value;
-        
-        // count -= changeQuantity.value;
-        // totalPrice = priceSubTotal;
 
         // Call Function to Calculate Total Price
         calculateTotals(priceSubTotal, quantitySubTotal);
@@ -121,89 +99,77 @@ cart.forEach((cartData) => {
       changeQuantity.addEventListener("change", function ($event) {
         let oldQuantity = 0;
         let itemFound = 0;
-        const articleElement = $event.target.closest("article");
-        // console.log("Article Element = ", articleElement);
+        const articleElement = $event.target.closest("article");        
 
         const id = String(articleElement.dataset.id);
-        const color = articleElement.dataset.color;
-        // console.log("Changing quantity", id, color);
+        const color = articleElement.dataset.color;        
 
         const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
         itemFound = cart.find(
           (cartItem) => cartItem.id === id && cartItem.color === color
-        );
-
-        // console.log("Item found = ", itemFound);
+        );       
 
         if (itemFound != 0) {
-          oldQuantity = itemFound.quantity;
-          // console.log("old Quantity", oldQuantity);
+          oldQuantity = itemFound.quantity;          
         }
 
-        const currentQuantity = parseInt($event.target.value);
-        // console.log("Current Quantity = ", currentQuantity);
+        const currentQuantity = parseInt($event.target.value);        
 
-        itemFound.quantity = currentQuantity;
-        // console.log("Update quantity = ", itemFound.quantity);
+        itemFound.quantity = currentQuantity;        
 
         let currentTotalQuantity = totalQuantity;
         let currentTotalPrice = totalPrice;
-
-        console.log("Current Total Quantity = ", currentTotalQuantity);
-        console.log("Current Total Price = ", currentTotalPrice);
-
+        
         const changeInQuantity = currentQuantity - oldQuantity;
-        // console.log("change In Quantity = ", changeInQuantity);
 
         price = parseInt(product.price);
-        // console.log("Price = ", price);
-
         const newTotalQuantity = currentTotalQuantity + changeInQuantity;
-        console.log(" New Total Quantity = ", newTotalQuantity);
-
+        
         const newTotalPrice = currentTotalPrice + changeInQuantity * price;
-        console.log(" New Total Price = ", newTotalPrice);
-
-        // localStorage.setItem("cart", cart);
-        // console.log("Cart Before ", cart);
-        localStorage.setItem("cart", JSON.stringify(cart));
-        // console.log("Cart After ", cart);
+        
+        localStorage.setItem("cart", JSON.stringify(cart));        
 
         displayTotals(newTotalPrice, newTotalQuantity);
       });
     });
 
-  // Remove Product from Cart
+  /**
+   * Remove Product from Cart
+   *
+   * @param {string} cartId Product Cart Id
+   * @param {string} cartColor Product Cart Color
+   */
   function removeItemFromCart(cartId, cartColor) {
     const cartData = localStorage.getItem("cart");
-    console.log("Cart Data Before Deletion = ", cartData);
     const cart = JSON.parse(cartData);
 
-    console.log("Cart info = ", cartId, " ", cartColor);
-
-    // let temp = cart.filter((item) => item.id != cartId);
-    let temp = cart.filter((item) => item.id != cartId || item.color != cartColor);
-    console.log("temp = ", temp);
+    let temp = cart.filter(
+      (item) => item.id != cartId || item.color != cartColor
+    );
     localStorage.setItem("cart", JSON.stringify(temp));
     // window.location.reload(true);
   }
 
-  // Calculate Total Price
+  /**
+   * Calculate Total Price
+   *
+   * @param {number} priceSubTotal Cart Price SubTotal
+   * @param {number} quantitySubTotal Cart Quantity SubTotal
+   */
   function calculateTotals(priceSubTotal, quantitySubTotal) {
-    // console.log("Total Quantity Before Calc= ", totalQuantity);
-    // console.log("Total Price Before Calc = ", totalPrice);
-
     totalPrice += priceSubTotal;
     totalQuantity += quantitySubTotal;
-
-    // console.log("Total Quantity After Calc= ", totalQuantity);
-    // console.log("Total Price After Calc = ", totalPrice);
 
     displayTotals(totalPrice, totalQuantity);
   }
 
-  // Display Total Price
+  /**
+   * Display Total Price
+   *
+   * @param {number} totalPrice Cart Total Price
+   * @param {number} totalQuantity Cart Total Articles
+   */
   function displayTotals(totalPrice, totalQuantity) {
     const cartPrice = document.querySelector(".cart__price");
     cartPrice.innerHTML = `        
@@ -230,9 +196,7 @@ cart.forEach((cartData) => {
       validateAddress,
       validateCity,
       validateEmail
-    );
-
-    console.log("Error msg = ", errorMsg);
+    );   
 
     // If No Errors with User Input Fields call Fetch Post command
     if (errorMsg === "") {
@@ -260,21 +224,27 @@ cart.forEach((cartData) => {
           return response.json();
         })
         .then(function (data) {
-          console.log("data is ", data);
+          // Clear Product Cart
+          clearCart(cart);
 
-          // TODO Clear out the cart
-          // Call the Confirmation Page
-          //TODO Add confirmation order from (data.orderID)
-          // window.location.href = "./confirmation.html";
+          // Save Order ID to local storage
+          localStorage.setItem("orderNum", data.orderId);
+
+          // Call Confirmation Page and display Order Number
+          window.location.assign("./confirmation.html");
         });
-
-      // TODO Clear out the cart
-      // Call the Confirmation Page
-      // window.location.href = "http://127.0.0.1:5500/frontend/html/confirmation.html";
     }
   });
 
   // Validate User Input Fields
+  /**
+   *
+   * @param {*} validateFirstName
+   * @param {*} validateLastName
+   * @param {*} validateAddress
+   * @param {*} validateCity
+   * @param {*} validateEmail
+   */
   function validateOrder(
     validateFirstName,
     validateLastName,
@@ -357,5 +327,16 @@ cart.forEach((cartData) => {
           <p>${errorMsg}</p>       
           `;
     }
+  }
+
+  /**
+   * Clear Items from Shopping Cart
+   * 
+   * @param {cart} cartItems Product Items in Cart
+   */
+  function clearCart(cartItems) {    
+    cartItems = [];
+    
+    localStorage.setItem("cart", JSON.stringify(cartItems));
   }
 });
