@@ -1,8 +1,6 @@
 
-// Get Order ID from local storage
-const orderIdNum = localStorage.getItem("orderNum");
-
-const orderItem = document.querySelector(".confirmation");
-orderItem.innerHTML = `                  
-          <p>Order confirmed! <br>Your order number is: <span id="orderId">${orderIdNum}</span></p>    
-          `;
+// Get Order ID from Parameter Search
+const urlParameter = new URLSearchParams(window.location.search);
+const orderIdNum = urlParameter.get('orderId');
+const orderItem = document.getElementById("orderId");
+orderItem.innerText = orderIdNum;
