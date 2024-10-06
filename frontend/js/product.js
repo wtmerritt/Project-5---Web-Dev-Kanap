@@ -47,12 +47,12 @@ function insertProduct(product) {
   }
 }
 
-// When clicked add to cart button ...
+// When button clicked add to cart 
 const cartAddItem = document.getElementById("addToCart");
 cartAddItem.addEventListener("click", addItemToCart);
 
 /**
- * Clicked to Add to cart button
+ * Click button to Add to cart function
  */
 function addItemToCart() { 
   // Getting current cart and setting to cart variable
