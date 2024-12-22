@@ -185,6 +185,8 @@ cart.forEach((cartData) => {
 
   // Trigger Order Listener 
   orderItem.addEventListener("click", function (event) {
+    event.preventDefault();
+
     // Get Fresh Data from LocalStorage
     const cartData = localStorage.getItem("cart");
     const cart = JSON.parse(cartData);
@@ -195,7 +197,7 @@ cart.forEach((cartData) => {
     const validateCity = document.getElementById("city").value;
     const validateEmail = document.getElementById("email").value;
 
-    event.preventDefault();
+    
     validateOrder(
       validateFirstName,
       validateLastName,

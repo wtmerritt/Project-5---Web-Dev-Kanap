@@ -9,7 +9,7 @@ fetch("http://localhost:3000/api/products")
   });
 
 // Get Existing Items
-const products = document.getElementById("items");
+// const products = document.getElementById("items");
 
 /**
  * This function inserts products
